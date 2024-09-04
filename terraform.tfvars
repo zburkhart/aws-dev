@@ -8,15 +8,9 @@ iam_groups = {
 }
 
 iam_group_policies = {
-  "admin-group" = [
-    aws_iam_policy.administrator_access.arn
-  ],
-  "power-user-access" = [
-    aws_iam_policy.power_user_access.arn
-  ],
-  "read-access-group" = [
-    aws_iam_policy.read_only_access.arn
-  ]
+  "admin-group"       = aws_iam_policy.administrator_access.arn
+  "power-user-access" = aws_iam_policy.power_user_access.arn
+  "read-access-group" = aws_iam_policy.read_only_access.arn
 }
 
 ##########################
