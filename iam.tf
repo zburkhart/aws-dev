@@ -1,3 +1,10 @@
+# Create IAM Users
+resource "aws_iam_user" "iam_users" {
+  for_each = var.iam_users
+  name     = each.key
+  tags     = each.value.tags
+}
+
 # Create IAM Groups
 resource "aws_iam_group" "iam_groups" {
   for_each = var.iam_groups
@@ -5,11 +12,22 @@ resource "aws_iam_group" "iam_groups" {
   path     = each.value.path
 }
 
+# Attach Users to Groups
+resource "aws_iam_user_group_membership" "user_group_membership" {
+  for_each = {
+    for user_name, user_info in var.iam_users :
+    user_name => user_info.groups
+  }
+
+  user   = aws_iam_user.iam_users[each.key].name
+  groups = each.value
+}
+
 # Define IAM Policies
 resource "aws_iam_policy" "administrator_access" {
   name        = "AdministratorAccess"
   description = "Provides full access to all AWS services and resources"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -24,12 +42,12 @@ resource "aws_iam_policy" "administrator_access" {
 resource "aws_iam_policy" "power_user_access" {
   name        = "PowerUserAccess"
   description = "Provides full access to AWS resources but not permissions management"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "ec2:*",
           "s3:*",
           "iam:GetUser",
@@ -54,7 +72,7 @@ resource "aws_iam_policy" "power_user_access" {
 resource "aws_iam_policy" "read_only_access" {
   name        = "ReadOnlyAccess"
   description = "Provides read-only access to AWS resources"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -72,25 +90,7 @@ resource "aws_iam_policy_attachment" "group_policy_attachment" {
 
   name       = "${each.key}-policy-attachment"
   policy_arn = each.value[0] # If you have multiple policies, adjust this as needed
-  groups     = [
+  groups = [
     aws_iam_group.iam_groups[each.key].name
   ]
-}
-
-# Create IAM Users
-resource "aws_iam_user" "iam_users" {
-  for_each = var.iam_users
-  name     = each.key
-  tags     = each.value.tags
-}
-
-# Attach Users to Groups
-resource "aws_iam_user_group_membership" "user_group_membership" {
-  for_each = {
-    for user_name, user_info in var.iam_users :
-    user_name => user_info.groups
-  }
-
-  user = aws_iam_user.iam_users[each.key].name
-  groups = each.value
 }

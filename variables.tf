@@ -1,8 +1,8 @@
 variable "iam_users" {
   description = "Map of IAM users with names and tags"
   type = map(object({
-    tags = map(string)
-    groups = list(string)  # List of group names the user belongs to
+    tags   = map(string)
+    groups = list(string) # List of group names the user belongs to
   }))
 }
 
@@ -15,5 +15,5 @@ variable "iam_groups" {
 
 variable "iam_group_policies" {
   description = "Map of IAM groups to policy ARNs"
-  type = map(list(string))
+  type        = map(list(string))
 }
