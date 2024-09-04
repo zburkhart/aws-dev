@@ -13,7 +13,7 @@ variable "iam_groups" {
   }))
 }
 
-variable "iam_group_policies" {
+/*variable "iam_group_policies" {
   description = "Map of IAM groups to a single policy ARN"
   type        = map(string)
-}
+}*/

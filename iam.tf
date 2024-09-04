@@ -25,7 +25,7 @@ resource "aws_iam_group" "iam_groups" {
 
   user  = aws_iam_user.iam_users[each.value.user_name].name
   group = aws_iam_group.iam_groups[each.value.group_name].name
-}*/
+}
 
 # Define IAM Policies
 resource "aws_iam_policy" "administrator_access" {
@@ -95,4 +95,4 @@ resource "aws_iam_policy_attachment" "group_policy_attachment" {
   name       = "${each.key}-policy-attachment"
   policy_arn = each.value
   groups     = [aws_iam_group.iam_groups[each.key].name]
-}
+}*/
