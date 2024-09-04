@@ -1,3 +1,6 @@
+##########################
+#          IAM           #
+##########################
 iam_users = {
   "terraform" = {
     tags = {
@@ -12,6 +15,11 @@ iam_users = {
 }
 
 iam_groups = {
-  "admin-group"       = "/admins/"
-  "power-user-access" = "/admins/"
+  "admin-group"       = { path = "/admins/" }
+  "power-user-access" = { path = "/admins/" }
 }
+
+
+##########################
+#          S3            #
+##########################

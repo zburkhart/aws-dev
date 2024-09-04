@@ -7,5 +7,7 @@ variable "iam_users" {
 
 variable "iam_groups" {
   description = "Map of IAM groups with names and paths"
-  type        = map(string)
+  type = map(object({
+    path = string
+  }))
 }

@@ -16,5 +16,5 @@ resource "aws_iam_access_key" "access_keys" {
 resource "aws_iam_group" "iam_groups" {
   for_each = var.iam_groups
   name     = each.key
-  path     = each.value
+  path     = each.value.path
 }
