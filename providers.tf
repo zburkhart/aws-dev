@@ -10,10 +10,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "aws-dev-tf-state"
-    key            = "aws-dev/terraform.tfstate"
+    bucket         = "aws-zbb-dev-tf-state"
+    key            = "aws-zbb-dev-tf-state/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "aws-dev-tfstate-locking"
+    dynamodb_table = "aws-zbb-dev-tfstate-locking"
     encrypt        = true
   }
 }
