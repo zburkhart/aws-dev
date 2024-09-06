@@ -1,19 +1,38 @@
+##########################
+#     IAM Variables      #
+##########################
 variable "iam_users" {
-  description = "Map of IAM users with names and tags"
-  type = map(object({
-    tags   = map(string)
-    groups = list(string) # List of group names the user belongs to
+  description = "List of IAM users"
+  type = list(object({
+    name   = string
+    groups = list(string)
   }))
+  default = []
 }
 
 variable "iam_groups" {
-  description = "Map of IAM groups with names and paths"
-  type = map(object({
-    path = string
+  description = "List of IAM groups"
+  type = list(object({
+    name     = string
+    policies = list(string)
   }))
+  default = []
 }
 
-/*variable "iam_group_policies" {
-  description = "Map of IAM groups to a single policy ARN"
-  type        = map(string)
-}*/
+variable "iam_policies" {
+  description = "List of IAM policies"
+  type = list(object({
+    name            = string
+    policy_document = string
+  }))
+  default = []
+}
+
+variable "policy_attachments" {
+  description = "List of policy attachments"
+  type = list(object({
+    group  = string
+    policy = string
+  }))
+  default = []
+}
