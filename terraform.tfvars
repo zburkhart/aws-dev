@@ -1,29 +1,58 @@
 ##########################
 #          IAM           #
 ##########################
-iam_users = {
-  "administrator" = {
-    tags   = { "Role" = "Admin" }
-    groups = ["admin-group"]
-  }
-  "developer" = {
-    tags   = { "Role" = "Viewer" }
+iam_users = [
+  {
+    name   = "Administrator"
+    groups = ["admin-group", "power-user-access"]
+  },
+  {
+    name   = "developer"
     groups = ["read-access-group"]
   }
-}
+]
 
-iam_groups = {
-  "admin-group"       = { path = "/admins/" }
-  "power-user-access" = { path = "/users/" }
-  "read-access-group" = { path = "/readers/" }
-}
+iam_groups = [
+  {
+    name     = "admin-group"
+    policies = ["AdministratorAccess", "PowerUserAccess"]
+  },
+  {
+    name     = "power-user-access"
+    policies = ["PowerUserAccess"]
+  },
+  {
+    name     = "read-access-group"
+    policies = ["ReadOnlyAccess"]
+  }
+]
 
-/*iam_group_policies = {
-  "admin-group"       = aws_iam_policy.administrator_access.arn
-  "power-user-access" = aws_iam_policy.power_user_access.arn
-  "read-access-group" = aws_iam_policy.read_only_access.arn
-}*/
+iam_policies = [
+  {
+    name            = "AdministratorAccess"
+    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}"
+  },
+  {
+    name            = "PowerUserAccess"
+    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"ec2:*\",\"s3:*\",\"iam:GetUser\",\"iam:ListAttachedUserPolicies\",\"iam:ListAttachedGroupPolicies\",\"iam:ListAttachedRolePolicies\",\"iam:ListGroupPolicies\",\"iam:ListRolePolicies\",\"iam:ListUserPolicies\",\"iam:GetPolicy\",\"iam:GetPolicyVersion\",\"iam:GetUserPolicy\",\"iam:GetGroupPolicy\",\"iam:GetRolePolicy\"],\"Resource\":\"*\"}]}"
+  },
+  {
+    name            = "ReadOnlyAccess"
+    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}"
+  }
+]
 
-##########################
-#          S3            #
-##########################
+policy_attachments = [
+  {
+    group  = "admin-group"
+    policy = "AdministratorAccess"
+  },
+  {
+    group  = "power-user-access"
+    policy = "PowerUserAccess"
+  },
+  {
+    group  = "read-access-group"
+    policy = "ReadOnlyAccess"
+  }
+]
