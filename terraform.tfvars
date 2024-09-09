@@ -1,4 +1,10 @@
 ##########################
+# General Variables    #
+##########################
+
+#environment = "prod"
+
+##########################
 #          IAM           #
 ##########################
 iam_users = [
@@ -56,3 +62,54 @@ policy_attachments = [
     policy = "ReadOnlyAccess"
   }
 ]
+
+###############################################
+# S3 Bucket Configuration                     #
+###############################################
+distribution_bucket    = "example-distribution-bucket"
+cloudtrail_logs_bucket = "example-cloudtril-logs-bucket"
+access_logs_bucket     = "example-cloudfront-access-logs-bucket"
+
+lifecycle_buckets = ["example-distribution-bucket"]
+
+###############################################
+# SSM Parameter Configuration                 #
+###############################################
+
+ssm_parameters = {}
+
+###############################################
+# Secret Manager Secrets Configuration        #
+###############################################
+# secrets = {
+#   "example-client" = {
+#     secret_recovery = 7
+#   },
+#   "fasten" = {
+#     secret_recovery = 7
+#   },
+#   "fasten_rds" = {
+#     secret_recovery = 7
+#   }
+# }
+
+###############################################
+# Simple Email Service (SES) Configuration    #
+###############################################
+domain_identities = {} #["fasten.cc"]
+
+#####################
+# RDS Configuration #
+#####################
+# rds_az                = "us-east-2b"
+# rds_db_name           = "ExampleProd"
+# rds_instance_class    = "db.t3.medium"
+# rds_max_storage       = 1000
+# rds_storage_type      = "gp2"
+# rds_allow_ingress_ips = ["172.31.0.0/20", "172.31.16.0/20", "172.31.32.0/20"]
+
+###############################
+# Elastic Beanstalk Variables #
+###############################
+
+# el_bnstlk_env_name = "example-api-prod-env-active"
