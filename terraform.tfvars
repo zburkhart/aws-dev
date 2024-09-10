@@ -70,7 +70,7 @@ buckets = {
   zb-me-prod = {
     lifecycle         = false
     enable_encryption = true
-    policy            = "" #"{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::767398074970:distribution/ED4TYWEMDMSQZ\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::fasten-client-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
+    policy            = "{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::329599651317:distribution/EQVO2WEK1DO1X\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::zb-me-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
   }
 
   site-zb-prod = {
@@ -95,7 +95,7 @@ buckets = {
 ###############################################
 cloudfront_distributions = {
   "zb_me_cf_distribution" = {
-    aliases                = ["zach-burkhart.me"]
+    aliases                = ["app.zach-burkhart.me"]
     error_caching_min_ttl  = 300
     error_code             = "403"
     response_code          = "200"
@@ -108,24 +108,24 @@ cloudfront_distributions = {
     min_ttl                = 0
     origin_domain_name     = "zb-me-prod.s3.us-east-1.amazonaws.com"
     origin_id              = "zb-me_prod.s3.us-east-1.amazonaws.com"
-    acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/606f7521-5390-4c41-bd0b-65dba384ce0e"
+    acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/758bda96-6cf5-46a3-ac24-85bc99fb7a59"
   }
-  # "site_zb_cf_distribution" = {
-  #   aliases                = ["site.zach-burkhart.me"]
-  #   error_caching_min_ttl  = 500
-  #   error_code             = "403"
-  #   response_code          = "200"
-  #   response_page_path     = "/index.html"
-  #   cache_policy_id        = "CachingDisabled"
-  #   target_origin_id       = "site-zb-prod.s3.us-east-1.amazonaws.com"
-  #   viewer_protocol_policy = "https-only"
-  #   default_ttl            = 0
-  #   max_ttl                = 0
-  #   min_ttl                = 0
-  #   origin_domain_name     = "site-zb-prod.s3.us-east-1.amazonaws.com"
-  #   origin_id              = "site-zb-prod.s3.us-east-1.amazonaws.com"
-  #   acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/f89067ef-0def-45ad-b610-2f01638718ef"
-  # }
+  #   "site_zb_cf_distribution" = {
+  #     aliases                = ["site.zach-burkhart.me"]
+  #     error_caching_min_ttl  = 500
+  #     error_code             = "403"
+  #     response_code          = "200"
+  #     response_page_path     = "/index.html"
+  #     cache_policy_id        = "CachingDisabled"
+  #     target_origin_id       = "site-zb-prod.s3.us-east-1.amazonaws.com"
+  #     viewer_protocol_policy = "https-only"
+  #     default_ttl            = 0
+  #     max_ttl                = 0
+  #     min_ttl                = 0
+  #     origin_domain_name     = "site-zb-prod.s3.us-east-1.amazonaws.com"
+  #     origin_id              = "site-zb-prod.s3.us-east-1.amazonaws.com"
+  #     acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/f89067ef-0def-45ad-b610-2f01638718ef"
+  #   }
 }
 
 cache_policies = {
@@ -157,7 +157,7 @@ origin_access_control = {
 
 acm_certificates = {
   "zb_me_prod_acm_cert" = {
-    domain_name       = "zach-burkhart.me"
+    domain_name       = "*.zach-burkhart.me"
     validation_domain = "zach-burkhart.me"
   },
   # "site_zb_prod_cert" = {

@@ -120,19 +120,6 @@ variable "acm_certificates" {
 ##########################
 #   Route53 Variables    #
 ##########################
-# variable "domain_name" {
-#   description = "The domain name for the hosted zone."
-#   type        = string
-# }
-
-# variable "subdomain" {
-#   description = "The subdomain for the CNAME record."
-#   type        = string
-# }
-# variable "cname_target" {
-#   description = "The target for the CNAME record."
-#   type        = string
-# }
 
 ####################
 # RDS Variables    #
