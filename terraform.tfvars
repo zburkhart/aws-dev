@@ -113,12 +113,12 @@ secrets = {
   "example-client" = {
     secret_recovery = 7
   }
-#   "fasten" = {
-#     secret_recovery = 7
-#   },
-#   "fasten_rds" = {
-#     secret_recovery = 7
-#   }
+  #   "fasten" = {
+  #     secret_recovery = 7
+  #   },
+  #   "fasten_rds" = {
+  #     secret_recovery = 7
+  #   }
 }
 
 ###############################################
