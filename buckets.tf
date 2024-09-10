@@ -7,8 +7,10 @@ resource "aws_s3_bucket" "buckets" {
 }
 
 ### S3 Bucket Server-Side Encryption Configuration ###
-resource "aws_s3_bucket_server_side_encryption_configuration" "example_cloudtrail_logs_sse_config" {
-  bucket = aws_s3_bucket.buckets["tf-test-cloudtrail-logs-bucket"].id
+resource "aws_s3_bucket_server_side_encryption_configuration" "sse_config" {
+  for_each = { for bucket_name, config in var.buckets : bucket_name => config if config.enable_encryption }
+
+  bucket = aws_s3_bucket.buckets[each.key].id
 
   rule {
     apply_server_side_encryption_by_default {

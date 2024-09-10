@@ -67,11 +67,13 @@ variable "policy_attachments" {
 variable "buckets" {
   description = "Map of bucket configurations."
   type = map(object({
-    lifecycle = bool
-    policy    = string
+    lifecycle         = bool
+    enable_encryption = bool
+    policy            = string
   }))
   default = {}
 }
+
 
 
 ####################
