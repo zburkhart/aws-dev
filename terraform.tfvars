@@ -124,7 +124,7 @@ secrets = {
 ###############################################
 # Simple Email Service (SES) Configuration    #
 ###############################################
-domain_identities = {} #["fasten.cc"]
+domain_identities = [] #["fasten.cc"]
 
 #####################
 # RDS Configuration #
