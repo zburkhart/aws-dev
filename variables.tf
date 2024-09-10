@@ -5,6 +5,11 @@
 #   type        = string
 #   description = "The name of the SDLC environment"
 # }
+# variable "aws_region" {
+#   description = "The AWS region to deploy resources into."
+#   type        = string
+#   default     = "us-east-1"  # Replace with your desired region
+# }
 
 ##########################
 #     IAM Variables      #
@@ -48,22 +53,6 @@ variable "policy_attachments" {
 ##########################
 # S3 Bucket Variables    #
 ##########################
-# variable "distribution_bucket" {
-#   type = string
-# }
-
-# variable "cloudtrail_logs_bucket" {
-#   type = string
-# }
-
-# variable "access_logs_bucket" {
-#   type = string
-# }
-
-# variable "lifecycle_buckets" {
-#   description = "List of S3 bucket names to apply lifecycle configurations"
-#   type        = list(string)
-# }
 variable "buckets" {
   description = "Map of bucket configurations."
   type = map(object({
@@ -74,7 +63,76 @@ variable "buckets" {
   default = {}
 }
 
+##########################
+#  CloudFront Variables  #
+##########################
+variable "cloudfront_distributions" {
+  description = "Map of CloudFront distributions to create."
+  type = map(object({
+    aliases                = list(string)
+    error_caching_min_ttl  = number
+    error_code             = string
+    response_code          = string
+    response_page_path     = string
+    cache_policy_id        = string
+    target_origin_id       = string
+    viewer_protocol_policy = string
+    default_ttl            = number
+    max_ttl                = number
+    min_ttl                = number
+    origin_domain_name     = string
+    origin_id              = string
+    acm_certificate_arn    = string
+  }))
+}
 
+variable "cache_policies" {
+  description = "Map of CloudFront cache policies to create."
+  type = map(object({
+    comment       = string
+    default_ttl   = number
+    max_ttl       = number
+    min_ttl       = number
+    enable_brotli = bool
+    enable_gzip   = bool
+  }))
+}
+
+variable "origin_access_control" {
+  description = "Origin access control settings."
+  type = object({
+    name             = string
+    description      = string
+    origin_type      = string
+    signing_behavior = string
+    signing_protocol = string
+  })
+}
+
+variable "acm_certificates" {
+  description = "Map of ACM certificates to create."
+  type = map(object({
+    domain_name       = string
+    validation_domain = string
+  }))
+}
+
+##########################
+#   Route53 Variables    #
+##########################
+# variable "domain_name" {
+#   description = "The domain name for the hosted zone."
+#   type        = string
+# }
+
+# variable "subdomain" {
+#   description = "The subdomain for the CNAME record."
+#   type        = string
+# }
+# variable "cname_target" {
+#   description = "The target for the CNAME record."
+#   type        = string
+# }
 
 ####################
 # RDS Variables    #
@@ -142,7 +200,7 @@ variable "buckets" {
 # }
 
 ##############################
-#Secret Manager Variables    #
+#  Secret Manager Variables  #
 ##############################
 variable "secrets" {
   description = "A map containing objects where each ovject define a single secret manager secret"

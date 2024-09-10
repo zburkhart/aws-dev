@@ -1,8 +1,8 @@
 ##########################
 # General Variables    #
 ##########################
-
-#environment = "prod"
+#environment    = "prod"
+#aws_region     = "us-east-1"
 
 ##########################
 #          IAM           #
@@ -67,27 +67,111 @@ policy_attachments = [
 #         S3 Bucket Configuration             #
 ###############################################
 buckets = {
-  tf-test-app-bucket = {
+  zb-me-prod = {
     lifecycle         = false
     enable_encryption = true
     policy            = "" #"{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::767398074970:distribution/ED4TYWEMDMSQZ\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::fasten-client-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
   }
 
-  tf-test-cloudtrail-logs-bucket = {
-    lifecycle         = true
+  site-zb-prod = {
+    lifecycle         = false
     enable_encryption = true
-    policy            = ""
+    policy            = "" #"{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::767398074970:distribution/ED4TYWEMDMSQZ\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::fasten-client-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
   }
+
+  #   tf-test-cloudtrail-logs-bucket = {
+  #     lifecycle         = true
+  #     enable_encryption = true
+  #     policy            = ""
+  #   }
+  # }
+  #   tf-test-access-logs-bucket = {
+  #     lifecycle = false
+  #     policy     = ""
 }
-#   tf-test-access-logs-bucket = {
-#     lifecycle = false
-#     policy     = ""
-#   }
 
 ###############################################
 #          CloudFront Configuration           #
 ###############################################
+cloudfront_distributions = {
+  "zb_me_cf_distribution" = {
+    aliases                = ["zach-burkhart.me"]
+    error_caching_min_ttl  = 300
+    error_code             = "403"
+    response_code          = "200"
+    response_page_path     = "/index.html"
+    cache_policy_id        = "CachingOptimized"
+    target_origin_id       = "zb-me-prod.s3.us-east-1.amazonaws.com"
+    viewer_protocol_policy = "https-only"
+    default_ttl            = 0
+    max_ttl                = 0
+    min_ttl                = 0
+    origin_domain_name     = "zb-me-prod.s3.us-east-1.amazonaws.com"
+    origin_id              = "zb-me_prod.s3.us-east-1.amazonaws.com"
+    acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/606f7521-5390-4c41-bd0b-65dba384ce0e"
+  }
+  # "site_zb_cf_distribution" = {
+  #   aliases                = ["site.zach-burkhart.me"]
+  #   error_caching_min_ttl  = 500
+  #   error_code             = "403"
+  #   response_code          = "200"
+  #   response_page_path     = "/index.html"
+  #   cache_policy_id        = "CachingDisabled"
+  #   target_origin_id       = "site-zb-prod.s3.us-east-1.amazonaws.com"
+  #   viewer_protocol_policy = "https-only"
+  #   default_ttl            = 0
+  #   max_ttl                = 0
+  #   min_ttl                = 0
+  #   origin_domain_name     = "site-zb-prod.s3.us-east-1.amazonaws.com"
+  #   origin_id              = "site-zb-prod.s3.us-east-1.amazonaws.com"
+  #   acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/f89067ef-0def-45ad-b610-2f01638718ef"
+  # }
+}
 
+cache_policies = {
+  "CachingOptimized" = {
+    comment       = "Policy with caching enabled. Supports Gzip and Brotli compression."
+    default_ttl   = 300
+    max_ttl       = 300
+    min_ttl       = 0
+    enable_brotli = true
+    enable_gzip   = true
+  },
+  "CachingDisabled" = {
+    comment       = "Policy with caching disabled"
+    default_ttl   = 300
+    max_ttl       = 300
+    min_ttl       = 0
+    enable_brotli = false
+    enable_gzip   = false
+  }
+}
+
+origin_access_control = {
+  name             = "s3-oac"
+  description      = "OAC for accessing S3 bucket"
+  origin_type      = "s3"
+  signing_behavior = "always"
+  signing_protocol = "sigv4"
+}
+
+acm_certificates = {
+  "zb_me_prod_acm_cert" = {
+    domain_name       = "zach-burkhart.me"
+    validation_domain = "zach-burkhart.me"
+  },
+  # "site_zb_prod_cert" = {
+  #   domain_name       = "site.zach-burkhart.me"
+  #   validation_domain = "zach-burkhart.me"
+  # }
+}
+
+###############################################
+#           Route53 Configuration             #
+###############################################
+# domain_name  = "zach-burkhart.me"
+# subdomain    = "app.zach-burkhart.me"
+# cname_target = "" #Replace with frontend CloudFront URL
 
 ###############################################
 #        SSM Parameter Configuration          #
