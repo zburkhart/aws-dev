@@ -64,23 +64,15 @@ variable "policy_attachments" {
 #   description = "List of S3 bucket names to apply lifecycle configurations"
 #   type        = list(string)
 # }
-# variable "buckets" {
-#   description = "Map of bucket configurations."
-#   type = map(object({
-#     bucket_name      = string
-#     lifecycle        = object({
-#       transition_days = number
-#       expiration_days = number
-#     })
-#     acl              = string
-#     server_side_encryption = object({
-#       kms_key_id = string
-#       sse_algorithm = string
-#     })
-#     policies = list(string)
-#   }))
-#   default = {}
-# }
+variable "buckets" {
+  description = "Map of bucket configurations."
+  type = map(object({
+    lifecycle = bool
+    policy    = string
+  }))
+  default = {}
+}
+
 
 ####################
 # RDS Variables    #

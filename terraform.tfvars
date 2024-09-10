@@ -66,39 +66,22 @@ policy_attachments = [
 ###############################################
 # S3 Bucket Configuration                     #
 ###############################################
-# distribution_bucket    = "example-distribution-bucket"
-# cloudtrail_logs_bucket = "example-cloudtril-logs-bucket"
-# access_logs_bucket     = "example-cloudfront-access-logs-bucket"
+buckets = {
+  tf-test-app-bucket = {
+    lifecycle = false
+    policy    = "" #"{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::767398074970:distribution/ED4TYWEMDMSQZ\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::fasten-client-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
+  }
 
-# lifecycle_buckets = ["example-distribution-bucket"]
-# buckets = {
-#   "distribution_bucket" = {
-#     bucket_name      = "example-distribution-bucket"
-#     lifecycle        = {
-#       transition_days = 30
-#       expiration_days = 90
-#     }
-#     acl              = "private"
-#     server_side_encryption = {
-#       kms_key_id = "your-kms-key-id"
-#       sse_algorithm = "aws:kms"
-#     }
-#     policies = []
-#   },
-#   "cloudtrail_logs_bucket" = {
-#     bucket_name      = "example-cloudtrail-logs-bucket"
-#     lifecycle        = {
-#       transition_days = 30
-#       expiration_days = 365
-#     }
-#     acl              = "private"
-#     server_side_encryption = {
-#       kms_key_id = "your-kms-key-id"
-#       sse_algorithm = "aws:kms"
-#     }
-#     policies = []
+  tf-test-cloudtrail-logs-bucket = {
+    lifecycle = true
+    policy    = ""
+  }
+}
+#   tf-test-access-logs-bucket = {
+#     lifecycle = false
+#     policy     = ""
 #   }
-# }
+
 
 ###############################################
 # SSM Parameter Configuration                 #
@@ -110,7 +93,7 @@ ssm_parameters = {}
 # Secret Manager Secrets Configuration        #
 ###############################################
 secrets = {
-  "example-client" = {
+  "example-kms-master-key" = {
     secret_recovery = 7
   }
   #   "fasten" = {
