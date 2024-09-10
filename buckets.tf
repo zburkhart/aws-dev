@@ -52,11 +52,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_configuration" {
 }
 
 ### S3 Bucket Policies ###
-# resource "aws_s3_bucket_policy" "bucket_policies" {
-#   for_each = { for bucket_name, config in var.buckets : bucket_name => config if config.policy != "" }
+resource "aws_s3_bucket_policy" "bucket_policies" {
+  for_each = { for bucket_name, config in var.buckets : bucket_name => config if config.policy != "" }
 
-#   bucket = aws_s3_bucket.buckets[each.key].id
-#   policy = each.value.policy
+  bucket = aws_s3_bucket.buckets[each.key].id
+  policy = each.value.policy
 
-#   depends_on = [aws_s3_bucket.buckets]
-# }
+  depends_on = [aws_s3_bucket.buckets]
+}
