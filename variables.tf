@@ -78,7 +78,7 @@ variable "cidr_block" {
 
 variable "subnet_cidr_blocks" {
   description = "CIDR blocks for subnets"
-  type = map(string)
+  type        = map(string)
   default = {
     public   = "10.0.1.0/24"
     private  = "10.0.2.0/24"
@@ -90,31 +90,31 @@ variable "subnet_cidr_blocks" {
 variable "availability_zones" {
   description = "List of availability zones"
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  default     = ["us-east-1a", "us-east-1b"]
 }
 
 ##########################
 #  CloudFront Variables  #
 ##########################
-# variable "cloudfront_distributions" {
-#   description = "Map of CloudFront distributions to create."
-#   type = map(object({
-#     aliases                = list(string)
-#     error_caching_min_ttl  = number
-#     error_code             = string
-#     response_code          = string
-#     response_page_path     = string
-#     cache_policy_id        = string
-#     target_origin_id       = string
-#     viewer_protocol_policy = string
-#     default_ttl            = number
-#     max_ttl                = number
-#     min_ttl                = number
-#     origin_domain_name     = string
-#     origin_id              = string
-#     acm_certificate_arn    = string
-#   }))
-# }
+variable "cloudfront_distributions" {
+  description = "Map of CloudFront distributions to create."
+  type = map(object({
+    aliases                = list(string)
+    error_caching_min_ttl  = number
+    error_code             = string
+    response_code          = string
+    response_page_path     = string
+    cache_policy_id        = string
+    target_origin_id       = string
+    viewer_protocol_policy = string
+    default_ttl            = number
+    max_ttl                = number
+    min_ttl                = number
+    origin_domain_name     = string
+    origin_id              = string
+    acm_certificate_arn    = string
+  }))
+}
 
 variable "cache_policies" {
   description = "Map of CloudFront cache policies to create."
