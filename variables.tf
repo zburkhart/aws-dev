@@ -64,6 +64,36 @@ variable "buckets" {
 }
 
 ##########################
+#     VPC Variables      #
+##########################
+variable "vpc_name" {
+  description = "The name of the VPC"
+  default     = "vpc-primary"
+}
+
+variable "cidr_block" {
+  description = "The CIDR block for the VPC"
+  default     = "10.0.0.0/16"
+}
+
+variable "subnet_cidr_blocks" {
+  description = "CIDR blocks for subnets"
+  type = map(string)
+  default = {
+    public   = "10.0.1.0/24"
+    private  = "10.0.2.0/24"
+    apps     = "10.0.3.0/24"
+    external = "10.0.4.0/24"
+  }
+}
+
+variable "availability_zones" {
+  description = "List of availability zones"
+  type        = list(string)
+  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
+}
+
+##########################
 #  CloudFront Variables  #
 ##########################
 # variable "cloudfront_distributions" {
