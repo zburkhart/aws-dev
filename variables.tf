@@ -66,25 +66,25 @@ variable "buckets" {
 ##########################
 #  CloudFront Variables  #
 ##########################
-variable "cloudfront_distributions" {
-  description = "Map of CloudFront distributions to create."
-  type = map(object({
-    aliases                = list(string)
-    error_caching_min_ttl  = number
-    error_code             = string
-    response_code          = string
-    response_page_path     = string
-    cache_policy_id        = string
-    target_origin_id       = string
-    viewer_protocol_policy = string
-    default_ttl            = number
-    max_ttl                = number
-    min_ttl                = number
-    origin_domain_name     = string
-    origin_id              = string
-    acm_certificate_arn    = string
-  }))
-}
+# variable "cloudfront_distributions" {
+#   description = "Map of CloudFront distributions to create."
+#   type = map(object({
+#     aliases                = list(string)
+#     error_caching_min_ttl  = number
+#     error_code             = string
+#     response_code          = string
+#     response_page_path     = string
+#     cache_policy_id        = string
+#     target_origin_id       = string
+#     viewer_protocol_policy = string
+#     default_ttl            = number
+#     max_ttl                = number
+#     min_ttl                = number
+#     origin_domain_name     = string
+#     origin_id              = string
+#     acm_certificate_arn    = string
+#   }))
+# }
 
 variable "cache_policies" {
   description = "Map of CloudFront cache policies to create."
