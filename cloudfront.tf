@@ -1,62 +1,62 @@
 ### CloudFront Distributions ###
-resource "aws_cloudfront_distribution" "cloudfront_distributions" {
-  for_each = var.cloudfront_distributions
+# resource "aws_cloudfront_distribution" "cloudfront_distributions" {
+#   for_each = var.cloudfront_distributions
 
-  aliases = each.value.aliases
+#   aliases = each.value.aliases
 
-  depends_on = [aws_cloudfront_cache_policy.cache_policy]
+#   depends_on = [aws_cloudfront_cache_policy.cache_policy]
 
-  custom_error_response {
-    error_caching_min_ttl = each.value.error_caching_min_ttl
-    error_code            = each.value.error_code
-    response_code         = each.value.response_code
-    response_page_path    = each.value.response_page_path
-  }
+#   custom_error_response {
+#     error_caching_min_ttl = each.value.error_caching_min_ttl
+#     error_code            = each.value.error_code
+#     response_code         = each.value.response_code
+#     response_page_path    = each.value.response_page_path
+#   }
 
-  default_cache_behavior {
-    allowed_methods        = ["GET", "HEAD"]
-    cache_policy_id        = aws_cloudfront_cache_policy.cache_policy[each.value.cache_policy_id].id
-    cached_methods         = ["GET", "HEAD"]
-    compress               = true
-    default_ttl            = each.value.default_ttl
-    max_ttl                = each.value.max_ttl
-    min_ttl                = each.value.min_ttl
-    smooth_streaming       = false
-    target_origin_id       = each.value.origin_id
-    viewer_protocol_policy = each.value.viewer_protocol_policy
-  }
+#   default_cache_behavior {
+#     allowed_methods        = ["GET", "HEAD"]
+#     cache_policy_id        = aws_cloudfront_cache_policy.cache_policy[each.value.cache_policy_id].id
+#     cached_methods         = ["GET", "HEAD"]
+#     compress               = true
+#     default_ttl            = each.value.default_ttl
+#     max_ttl                = each.value.max_ttl
+#     min_ttl                = each.value.min_ttl
+#     smooth_streaming       = false
+#     target_origin_id       = each.value.origin_id
+#     viewer_protocol_policy = each.value.viewer_protocol_policy
+#   }
 
-  default_root_object = "index.html"
-  enabled             = true
-  http_version        = "http2"
-  is_ipv6_enabled     = true
+#   default_root_object = "index.html"
+#   enabled             = true
+#   http_version        = "http2"
+#   is_ipv6_enabled     = true
 
-  origin {
-    connection_attempts      = 3
-    connection_timeout       = 10
-    domain_name              = each.value.origin_domain_name
-    origin_id                = each.value.origin_id
-    origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
-  }
+#   origin {
+#     connection_attempts      = 3
+#     connection_timeout       = 10
+#     domain_name              = each.value.origin_domain_name
+#     origin_id                = each.value.origin_id
+#     origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
+#   }
 
-  price_class = "PriceClass_All"
+#   price_class = "PriceClass_All"
 
-  restrictions {
-    geo_restriction {
-      restriction_type = "none"
-    }
-  }
+#   restrictions {
+#     geo_restriction {
+#       restriction_type = "none"
+#     }
+#   }
 
-  retain_on_delete = false
-  staging          = false
+#   retain_on_delete = false
+#   staging          = false
 
-  viewer_certificate {
-    acm_certificate_arn            = each.value.acm_certificate_arn
-    cloudfront_default_certificate = false
-    minimum_protocol_version       = "TLSv1.2_2021"
-    ssl_support_method             = "sni-only"
-  }
-}
+#   viewer_certificate {
+#     acm_certificate_arn            = each.value.acm_certificate_arn
+#     cloudfront_default_certificate = false
+#     minimum_protocol_version       = "TLSv1.2_2021"
+#     ssl_support_method             = "sni-only"
+#   }
+# }
 
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = var.origin_access_control.name
@@ -110,4 +110,9 @@ resource "aws_acm_certificate" "acm_certificate" {
 }
 
 ### Notes ###
-# Cache Policy IDs, OAC, and ACM Certificate ARNs must be known prior to deploying CF distributions - Use outputs to retrieve values
+# Cache Policy IDs, OAC, and ACM Certificate ARNs must be known prior to deploying CF distributions - Use outputs or locals to reference values
+# S3 Bucket(s) that host static content that is served over CloudFront must have the correct distribution ARN applied to the bucket's policy
+# Encryption method for CloudFront buckets must be AES256 or SSE-S3. All others should be encrypted via KMS
+# Permissions on CloudFront bucket objects need to match the encryption type of the bucket's settings
+# Revise bucket code to apply sse-s3 or aes-256 encryption methods for CloudFront buckets
+# Dynamically set the app bucket to the previous step's encryption method and the site bucket to kms encryption

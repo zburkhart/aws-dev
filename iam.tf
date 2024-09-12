@@ -5,6 +5,18 @@ resource "aws_iam_user" "users" {
   name = each.value.name
 }
 
+### Create IAM Roles ###
+resource "aws_iam_role" "roles" {
+  for_each = { for role in var.iam_roles : role.name => role }
+
+  name               = each.value.name
+  assume_role_policy = each.value.assume_role_policy
+
+  tags = {
+    Name = each.value.name
+  }
+}
+
 ### Create IAM Groups ###
 resource "aws_iam_group" "groups" {
   for_each = { for group in var.iam_groups : group.name => group }
@@ -12,7 +24,6 @@ resource "aws_iam_group" "groups" {
   name = each.value.name
 
   depends_on = [aws_iam_user.users] # Ensure IAM users are created before assigning them to groups
-
 }
 
 ### Add IAM Users to Groups ###

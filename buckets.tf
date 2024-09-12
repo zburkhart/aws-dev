@@ -6,23 +6,6 @@ resource "aws_s3_bucket" "buckets" {
   force_destroy = true
 }
 
-### S3 Bucket Website Configuration ###
-resource "aws_s3_bucket_website_configuration" "website_config" {
-  for_each = {
-    for bucket_name, config in var.buckets : bucket_name => config if bucket_name == "zb-me-prod"
-  }
-
-  bucket = aws_s3_bucket.buckets[each.key].id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-}
-
 ### S3 Bucket Server-Side Encryption Configuration ###
 resource "aws_s3_bucket_server_side_encryption_configuration" "sse_config" {
   for_each = { for bucket_name, config in var.buckets : bucket_name => config if config.enable_encryption }
@@ -31,8 +14,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sse_config" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.kms_master_key.arn
-      sse_algorithm     = "aws:kms"
+      # kms_master_key_id = aws_kms_key.kms_master_key.arn // For Cloudfront distribution buckets use sse-s3, all others use kms
+      sse_algorithm = "AES256"
     }
   }
 

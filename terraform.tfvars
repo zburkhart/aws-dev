@@ -33,18 +33,29 @@ iam_groups = [
   }
 ]
 
+iam_roles = [
+  {
+    name               = "eks-cluster-role"
+    assume_role_policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"eks.amazonaws.com\"}}]}"
+  },
+  {
+    name               = "eks-node-role"
+    assume_role_policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}]}"
+  }
+]
+
 iam_policies = [
   {
     name            = "AdministratorAccess"
-    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}"
+    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}",
   },
   {
     name            = "PowerUserAccess"
-    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"ec2:*\",\"s3:*\",\"iam:GetUser\",\"iam:ListAttachedUserPolicies\",\"iam:ListAttachedGroupPolicies\",\"iam:ListAttachedRolePolicies\",\"iam:ListGroupPolicies\",\"iam:ListRolePolicies\",\"iam:ListUserPolicies\",\"iam:GetPolicy\",\"iam:GetPolicyVersion\",\"iam:GetUserPolicy\",\"iam:GetGroupPolicy\",\"iam:GetRolePolicy\"],\"Resource\":\"*\"}]}"
+    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"ec2:*\",\"s3:*\",\"iam:GetUser\",\"iam:ListAttachedUserPolicies\",\"iam:ListAttachedGroupPolicies\",\"iam:ListAttachedRolePolicies\",\"iam:ListGroupPolicies\",\"iam:ListRolePolicies\",\"iam:ListUserPolicies\",\"iam:GetPolicy\",\"iam:GetPolicyVersion\",\"iam:GetUserPolicy\",\"iam:GetGroupPolicy\",\"iam:GetRolePolicy\"],\"Resource\":\"*\"}]}",
   },
   {
     name            = "ReadOnlyAccess"
-    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}"
+    policy_document = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"*\",\"Resource\":\"*\"}]}",
   }
 ]
 
@@ -70,7 +81,7 @@ buckets = {
   zb-me-prod = {
     lifecycle         = false
     enable_encryption = true
-    policy            = "{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::329599651317:distribution/EQVO2WEK1DO1X\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::zb-me-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
+    policy            = "{\"Id\":\"PolicyForCloudFrontPrivateContent\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Condition\":{\"StringEquals\":{\"AWS:SourceArn\":\"arn:aws:cloudfront::329599651317:distribution/E3KWVGKFT6KNFO\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudfront.amazonaws.com\"},\"Resource\":\"arn:aws:s3:::zb-me-prod/*\",\"Sid\":\"AllowCloudFrontServicePrincipal\"}],\"Version\":\"2008-10-17\"}"
   }
 
   site-zb-prod = {
@@ -93,52 +104,52 @@ buckets = {
 ###############################################
 #              VPC Configuration              #
 ###############################################
-availability_zones = ["us-east-1a", "us-east-1b"]
+# availability_zones = ["us-east-1a", "us-east-1b"]
 
-subnet_cidr_blocks = {
-  public   = "10.0.1.0/24"
-  private  = "10.0.2.0/24"
-  apps     = "10.0.3.0/24"
-  external = "10.0.4.0/24"
-}
+# subnet_cidr_blocks = {
+#   public   = "10.0.1.0/24"
+#   private  = "10.0.2.0/24"
+#   apps     = "10.0.3.0/24"
+#   external = "10.0.4.0/24"
+# }
 
 ###############################################
 #          CloudFront Configuration           #
 ###############################################
-cloudfront_distributions = {
-  "zb_me_cf_distribution" = {
-    aliases                = ["app.zach-burkhart.me"]
-    error_caching_min_ttl  = 300
-    error_code             = "403"
-    response_code          = "200"
-    response_page_path     = "/index.html"
-    cache_policy_id        = "CachingOptimized"
-    target_origin_id       = "zb-me-prod.s3.us-east-1.amazonaws.com"
-    viewer_protocol_policy = "https-only"
-    default_ttl            = 0
-    max_ttl                = 0
-    min_ttl                = 0
-    origin_domain_name     = "zb-me-prod.s3.us-east-1.amazonaws.com"
-    origin_id              = "zb-me_prod.s3.us-east-1.amazonaws.com"
-    acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/80faf01b-bcc0-43d2-b7b9-02f83167c3aa"
-  }
-  "site_zb_cf_distribution" = {
-    aliases                = ["site.zach-burkhart.me"]
-    error_caching_min_ttl  = 500
-    error_code             = "403"
-    response_code          = "200"
-    response_page_path     = "/index.html"
-    cache_policy_id        = "CachingDisabled"
-    target_origin_id       = "site-zb-prod.s3.us-east-1.amazonaws.com"
-    viewer_protocol_policy = "https-only"
-    default_ttl            = 0
-    max_ttl                = 0
-    min_ttl                = 0
-    origin_domain_name     = "site-zb-prod.s3.us-east-1.amazonaws.com"
-    origin_id              = "site-zb-prod.s3.us-east-1.amazonaws.com"
-    acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/f89067ef-0def-45ad-b610-2f01638718ef"
-  }
-}
+# cloudfront_distributions = {
+#   "zb_me_cf_distribution" = {
+#     aliases                = ["app.zach-burkhart.me"]
+#     error_caching_min_ttl  = 300
+#     error_code             = "403"
+#     response_code          = "200"
+#     response_page_path     = "/index.html"
+#     cache_policy_id        = "CachingOptimized"
+#     target_origin_id       = "zb-me-prod.s3.us-east-1.amazonaws.com"
+#     viewer_protocol_policy = "https-only"
+#     default_ttl            = 0
+#     max_ttl                = 0
+#     min_ttl                = 0
+#     origin_domain_name     = "zb-me-prod.s3.us-east-1.amazonaws.com"
+#     origin_id              = "zb-me_prod.s3.us-east-1.amazonaws.com"
+#     acm_certificate_arn    = "arn:aws:acm:us-east-1:329599651317:certificate/042f8c94-f88c-4675-a481-e9dfe5a90937"
+#   }
+# "site_zb_cf_distribution" = {
+#   aliases                = ["site.zach-burkhart.me"]
+#   error_caching_min_ttl  = 500
+#   error_code             = "403"
+#   response_code          = "200"
+#   response_page_path     = "/index.html"
+#   cache_policy_id        = "CachingDisabled"
+#   target_origin_id       = "site-zb-prod.s3.us-east-1.amazonaws.com"
+#   viewer_protocol_policy = "https-only"
+#   default_ttl            = 0
+#   max_ttl                = 0
+#   min_ttl                = 0
+#   origin_domain_name     = "site-zb-prod.s3.us-east-1.amazonaws.com"
+#   origin_id              = "site-zb-prod.s3.us-east-1.amazonaws.com"
+#   acm_certificate_arn    = aws_acm_certificate.site_zb_prod_cert.arn
+# }
+#}
 
 cache_policies = {
   "CachingOptimized" = {
@@ -168,12 +179,16 @@ origin_access_control = {
 }
 
 acm_certificates = {
-  "zb_me_prod_acm_cert" = {
-    domain_name       = "app.zach-burkhart.me"
+  "app_zb_prod_cert" = {
+    domain_name       = "*.zach-burkhart.me"
     validation_domain = "zach-burkhart.me"
   },
   "site_zb_prod_cert" = {
     domain_name       = "zach-burkhart.me"
+    validation_domain = "zach-burkhart.me"
+  },
+  "main_app_cert" = {
+    domain_name       = "app.zach-burkhart.me"
     validation_domain = "zach-burkhart.me"
   }
 }
@@ -181,9 +196,7 @@ acm_certificates = {
 ###############################################
 #           Route53 Configuration             #
 ###############################################
-# domain_name  = "zach-burkhart.me"
-# subdomain    = "app.zach-burkhart.me"
-# cname_target = "" #Replace with frontend CloudFront URL
+hosted_zone_name = "zach-burkhart.me"
 
 ###############################################
 #        SSM Parameter Configuration          #
