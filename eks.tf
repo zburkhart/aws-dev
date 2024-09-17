@@ -1,31 +1,31 @@
-# # Define the EKS cluster
-# resource "aws_eks_cluster" "eks" {
-#   name     = "my-eks-cluster"
+# resource "aws_eks_cluster" "eks_clusters" {
+#   for_each = var.eks_clusters
+
+#   name     = each.value.name
 #   role_arn = aws_iam_role.eks_cluster_role.arn
-#   version  = "1.21"
 
 #   vpc_config {
-#     subnet_ids = aws_subnet.subnet[*].id
+#     subnet_ids = [for s in aws_subnet.subnet : s.id]
 #   }
 
-#   tags = {
-#     Name = "my-eks-cluster"
-#   }
+#   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
 # }
 
-# # Define node group
-# resource "aws_eks_node_group" "eks_node_group" {
-#   cluster_name    = aws_eks_cluster.eks.name
-#   node_group_name = "eks-node-group"
+# resource "aws_eks_node_group" "node_groups" {
+#   for_each = var.eks_node_groups
+
+#   cluster_name    = each.value.cluster_name
+#   node_group_name = each.value.node_group_name
 #   node_role_arn   = aws_iam_role.eks_node_role.arn
-#   subnet_ids      = aws_subnet.subnet[*].id
+#   subnet_ids      = [for s in aws_subnet.subnet : s.id]
+
 #   scaling_config {
-#     desired_size = 2
-#     max_size     = 3
-#     min_size     = 1
+#     desired_size = each.value.min_nodes
+#     max_size     = each.value.max_nodes
+#     min_size     = each.value.min_nodes
 #   }
 
-#   tags = {
-#     Name = "eks-node-group"
-#   }
+#   instance_types = [each.value.node_instance_type]
+
+#   depends_on = [aws_eks_cluster.eks_clusters]
 # }

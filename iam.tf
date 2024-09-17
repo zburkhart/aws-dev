@@ -49,3 +49,11 @@ resource "aws_iam_group_policy_attachment" "group_policies" {
   group      = aws_iam_group.groups[each.value.group].name
   policy_arn = aws_iam_policy.policies[each.value.policy].arn
 }
+
+### Define IAM Role Policy Attachments ###
+resource "aws_iam_role_policy_attachment" "role_policy_attachments" {
+  for_each = { for attachment in var.role_policy_attachments : "${attachment.role}-${attachment.policy_arn}" => attachment }
+
+  role       = aws_iam_role.roles[each.value.role].name
+  policy_arn = each.value.policy_arn
+}

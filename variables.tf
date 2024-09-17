@@ -50,6 +50,15 @@ variable "iam_policies" {
   default = []
 }
 
+variable "role_policy_attachments" {
+  description = "List of role-policy attachments"
+  type = list(object({
+    role       = string
+    policy_arn = string
+  }))
+  default = []
+}
+
 variable "policy_attachments" {
   description = "List of policy attachments"
   type = list(object({
@@ -58,7 +67,6 @@ variable "policy_attachments" {
   }))
   default = []
 }
-
 ##########################
 # S3 Bucket Variables    #
 ##########################
@@ -75,32 +83,32 @@ variable "buckets" {
 ##########################
 #     VPC Variables      #
 ##########################
-# variable "vpc_name" {
-#   description = "The name of the VPC"
-#   default     = "vpc-primary"
-# }
+variable "vpc_name" {
+  description = "The name of the VPC"
+  default     = "vpc-primary"
+}
 
-# variable "cidr_block" {
-#   description = "The CIDR block for the VPC"
-#   default     = "10.0.0.0/16"
-# }
+variable "cidr_block" {
+  description = "The CIDR block for the VPC"
+  default     = "10.0.0.0/16"
+}
 
-# variable "subnet_cidr_blocks" {
-#   description = "CIDR blocks for subnets"
-#   type        = map(string)
-#   default = {
-#     public   = "10.0.1.0/24"
-#     private  = "10.0.2.0/24"
-#     apps     = "10.0.3.0/24"
-#     external = "10.0.4.0/24"
-#   }
-# }
+variable "subnet_cidr_blocks" {
+  description = "CIDR blocks for subnets"
+  type        = map(string)
+  default = {
+    public   = "10.0.1.0/24"
+    private  = "10.0.2.0/24"
+    apps     = "10.0.3.0/24"
+    external = "10.0.4.0/24"
+  }
+}
 
-# variable "availability_zones" {
-#   description = "List of availability zones"
-#   type        = list(string)
-#   default     = ["us-east-1a", "us-east-1b"]
-# }
+variable "availability_zones" {
+  description = "List of availability zones"
+  type        = list(string)
+  default     = ["us-east-1a", "us-east-1b"]
+}
 
 ##########################
 #  CloudFront Variables  #
@@ -228,6 +236,74 @@ variable "hosted_zone_name" {
 #   type        = list(string)
 #   description = "List of CIDR ranges to allow ingress from into the RDS instance."
 #   default     = []
+# }
+
+##############################
+#       EKS Variables        #
+##############################
+# variable "eks_clusters" {
+#   description = "Map of EKS clusters with configuration"
+#   type = map(object({
+#     name               = string
+#     node_instance_type = string
+#     min_nodes          = number
+#     max_nodes          = number
+#   }))
+#   default = {
+#     dev = {
+#       name               = "dev-cluster"
+#       node_instance_type = "t2.micro"
+#       min_nodes          = 2
+#       max_nodes          = 3
+#     },
+#     prod = {
+#       name               = "prod-cluster"
+#       node_instance_type = "t2.micro"
+#       min_nodes          = 3
+#       max_nodes          = 5
+#     }
+#   }
+# }
+
+# variable "eks_node_groups" {
+#   description = "Map of EKS node groups for specific purposes"
+#   type = map(object({
+#     cluster_name       = string
+#     node_group_name    = string
+#     node_instance_type = string
+#     min_nodes          = number
+#     max_nodes          = number
+#   }))
+#   default = {
+#     dev-prometheus = {
+#       cluster_name       = "dev-cluster"
+#       node_group_name    = "dev-prometheus-node-group"
+#       node_instance_type = "t2.small"
+#       min_nodes          = 1
+#       max_nodes          = 2
+#     },
+#     dev-grafana = {
+#       cluster_name       = "dev-cluster"
+#       node_group_name    = "dev-grafana-node-group"
+#       node_instance_type = "t2.small"
+#       min_nodes          = 1
+#       max_nodes          = 2
+#     },
+#     prod-prometheus = {
+#       cluster_name       = "prod-cluster"
+#       node_group_name    = "prod-prometheus-node-group"
+#       node_instance_type = "t2.medium"
+#       min_nodes          = 2
+#       max_nodes          = 3
+#     },
+#     prod-grafana = {
+#       cluster_name       = "prod-cluster"
+#       node_group_name    = "prod-grafana-node-group"
+#       node_instance_type = "t2.medium"
+#       min_nodes          = 2
+#       max_nodes          = 3
+#     }
+#   }
 # }
 
 ##############################

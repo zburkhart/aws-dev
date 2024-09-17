@@ -1,111 +1,92 @@
 # Create the VPC
-# resource "aws_vpc" "vpc_primary" {
-#   cidr_block           = var.cidr_block
-#   enable_dns_support   = true
-#   enable_dns_hostnames = true
-#   tags = {
-#     Name = var.vpc_name
-#   }
-# }
+resource "aws_vpc" "vpc_primary" {
+  cidr_block           = var.cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  tags = {
+    Name = var.vpc_name
+  }
+}
 
-# # Create Subnets
-# resource "aws_subnet" "subnet" {
-#   for_each = var.subnet_cidr_blocks
+# Create Subnets
+resource "aws_subnet" "subnet" {
+  for_each = var.subnet_cidr_blocks
 
-#   vpc_id                  = aws_vpc.vpc_primary.id
-#   cidr_block              = each.value
-#   availability_zone       = element(var.availability_zones, index(keys(var.subnet_cidr_blocks), each.key))
-#   map_public_ip_on_launch = each.key == "public"
-#   tags = {
-#     Name = "${each.key}-${index(keys(var.subnet_cidr_blocks), each.key)}"
-#   }
-# }
+  vpc_id                  = aws_vpc.vpc_primary.id
+  cidr_block              = each.value
+  availability_zone       = element(var.availability_zones, index(keys(var.subnet_cidr_blocks), each.key))
+  map_public_ip_on_launch = each.key == "public"
+  tags = {
+    Name = "${each.key}-${index(keys(var.subnet_cidr_blocks), each.key)}"
+  }
+}
 
-# # Create Route Tables
-# resource "aws_route_table" "route_table" {
-#   for_each = var.subnet_cidr_blocks
+# Create Route Tables for Public and Private Subnets
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.vpc_primary.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw_primary.id
+  }
+  tags = {
+    Name = "public-route-table"
+  }
+}
 
-#   vpc_id = aws_vpc.vpc_primary.id
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.igw_primary.id
-#   }
-#   tags = {
-#     Name = "${each.key}-route-table"
-#   }
-# }
+resource "aws_route_table" "private_route_table" {
+  vpc_id = aws_vpc.vpc_primary.id
+  tags = {
+    Name = "private-route-table"
+  }
+}
 
-# # Associate Subnets with Route Tables
-# resource "aws_route_table_association" "subnet_rt_associations" {
-#   for_each = var.subnet_cidr_blocks
+# Associate Public Subnets with Public Route Table
+resource "aws_route_table_association" "public_subnet_rt_associations" {
+  for_each = { for k, v in var.subnet_cidr_blocks : k => v if k == "public" }
 
-#   subnet_id      = aws_subnet.subnet[each.key].id
-#   route_table_id = aws_route_table.route_table[each.key].id
-# }
+  subnet_id      = aws_subnet.subnet[each.key].id
+  route_table_id = aws_route_table.public_route_table.id
+}
 
-# # Create an Internet Gateway
-# resource "aws_internet_gateway" "igw_primary" {
-#   vpc_id = aws_vpc.vpc_primary.id
-#   tags = {
-#     Name = "igw-main"
-#   }
-# }
+# Associate Private Subnets with Private Route Table
+resource "aws_route_table_association" "private_subnet_rt_associations" {
+  for_each = { for k, v in var.subnet_cidr_blocks : k => v if k == "private" }
 
-# # Create a NAT Gateway
-# resource "aws_eip" "nat_eip" {
-#   count = length(var.availability_zones)
-# }
+  subnet_id      = aws_subnet.subnet[each.key].id
+  route_table_id = aws_route_table.private_route_table.id
+}
 
-# resource "aws_nat_gateway" "nat_gw_primary" {
-#   count         = length(var.availability_zones)
-#   allocation_id = aws_eip.nat_eip[count.index].id
-#   subnet_id     = aws_subnet.subnet["public"].id
-#   tags = {
-#     Name = "nat-gateway-${count.index}"
-#   }
-# }
+# Create an Internet Gateway
+resource "aws_internet_gateway" "igw_primary" {
+  vpc_id = aws_vpc.vpc_primary.id
+  tags = {
+    Name = "igw-main"
+  }
+}
 
-# # Route for NAT Gateway
-# resource "aws_route" "nat_route" {
-#   count                  = length(var.availability_zones)
-#   route_table_id         = aws_route_table.route_table["private"].id
-#   destination_cidr_block = "0.0.0.0/0"
-#   nat_gateway_id         = aws_nat_gateway.nat_gw_primary[count.index].id
-# }
+# Create a NAT Gateway
+resource "aws_eip" "nat_eip" {
+  count = length(var.availability_zones)
+}
 
-# # Create Network ACLs
-# resource "aws_network_acl" "acl" {
-#   for_each = {
-#     "apps"    = {}
-#     "private" = {}
-#   }
+resource "aws_nat_gateway" "nat_gw_primary" {
+  count         = length(var.availability_zones)
+  allocation_id = aws_eip.nat_eip[count.index].id
+  subnet_id     = aws_subnet.subnet["public"].id
+  tags = {
+    Name = "nat-gateway-${count.index}"
+  }
+}
 
-#   vpc_id = aws_vpc.vpc_primary.id
-#   tags = {
-#     Name = "${each.key}-acl"
-#   }
-# }
+# Route for NAT Gateway
+resource "aws_route" "nat_route" {
+  count                  = length(var.availability_zones)
+  route_table_id         = aws_route_table.private_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gw_primary[count.index].id
+}
 
-# # Create Network ACL Rules
-# resource "aws_network_acl_rule" "acl_rule" {
-#   for_each = {
-#     "apps_inbound"     = { acl = "apps", egress = false, port = 80 }
-#     "apps_outbound"    = { acl = "apps", egress = true, port = 80 }
-#     "private_inbound"  = { acl = "private", egress = false, port = 22 }
-#     "private_outbound" = { acl = "private", egress = true, port = 22 }
-#   }
-
-#   network_acl_id = aws_network_acl.acl[each.value.acl].id
-#   rule_number    = 100
-#   protocol       = "tcp"
-#   rule_action    = "allow"
-#   egress         = each.value.egress
-#   cidr_block     = "0.0.0.0/0"
-#   from_port      = each.value.port
-#   to_port        = each.value.port
-# }
-
-#Create Security Groups
+# #Create Security Groups
 # resource "aws_security_group" "sg" {
 #   for_each = {
 #     "web" = {}

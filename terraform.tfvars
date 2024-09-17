@@ -59,6 +59,21 @@ iam_policies = [
   }
 ]
 
+role_policy_attachments = [
+  {
+    role       = "eks-cluster-role"
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  },
+  {
+    role       = "eks-node-role"
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  },
+  {
+    role       = "eks-node-role"
+    policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  }
+]
+
 policy_attachments = [
   {
     group  = "admin-group"
@@ -104,14 +119,14 @@ buckets = {
 ###############################################
 #              VPC Configuration              #
 ###############################################
-# availability_zones = ["us-east-1a", "us-east-1b"]
+availability_zones = ["us-east-1a"] //["us-east-1a"], "us-east-1b"] Enable this for deployment in multiple AZs
 
-# subnet_cidr_blocks = {
-#   public   = "10.0.1.0/24"
-#   private  = "10.0.2.0/24"
-#   apps     = "10.0.3.0/24"
-#   external = "10.0.4.0/24"
-# }
+subnet_cidr_blocks = {
+  public  = "10.0.1.0/24"
+  private = "10.0.2.0/24"
+  apps    = "10.0.3.0/24"
+  mgmt    = "10.0.4.0/24"
+}
 
 ###############################################
 #          CloudFront Configuration           #
@@ -192,6 +207,55 @@ acm_certificates = {
     validation_domain = "zach-burkhart.me"
   }
 }
+
+###############################################
+#              EKS Configuration              #
+# ###############################################
+# eks_clusters = {
+#   dev = {
+#     name               = "dev-cluster"
+#     node_instance_type = "t2.nano"
+#     min_nodes          = 2
+#     max_nodes          = 3
+#   },
+#   prod = {
+#     name               = "prod-cluster"
+#     node_instance_type = "t2.micro"
+#     min_nodes          = 3
+#     max_nodes          = 5
+#   }
+# }
+
+# eks_node_groups = {
+#   dev-prometheus = {
+#     cluster_name       = "dev-cluster"
+#     node_group_name    = "dev-prometheus-node-group"
+#     node_instance_type = "t2.small"
+#     min_nodes          = 1
+#     max_nodes          = 2
+#   },
+#   dev-grafana = {
+#     cluster_name       = "dev-cluster"
+#     node_group_name    = "dev-grafana-node-group"
+#     node_instance_type = "t2.small"
+#     min_nodes          = 1
+#     max_nodes          = 2
+#   },
+#   prod-prometheus = {
+#     cluster_name       = "prod-cluster"
+#     node_group_name    = "prod-prometheus-node-group"
+#     node_instance_type = "t2.medium"
+#     min_nodes          = 2
+#     max_nodes          = 3
+#   },
+#   prod-grafana = {
+#     cluster_name       = "prod-cluster"
+#     node_group_name    = "prod-grafana-node-group"
+#     node_instance_type = "t2.medium"
+#     min_nodes          = 2
+#     max_nodes          = 3
+#   }
+# }
 
 ###############################################
 #           Route53 Configuration             #
